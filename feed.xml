@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.2">Jekyll</generator><link href="/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="/blog/" rel="alternate" type="text/html" /><updated>2017-12-11T02:50:02+00:00</updated><id>/blog/</id><title type="html">Just Random Things</title><subtitle>A blog to keep track and share my learnings as a dev.</subtitle><entry><title type="html">Best practices towards writing a REST API</title><link href="/blog/rest-api-best-practices" rel="alternate" type="text/html" title="Best practices towards writing a REST API" /><published>2017-12-03T10:00:00+00:00</published><updated>2017-12-03T10:00:00+00:00</updated><id>/blog/rest-api-best-practices</id><content type="html" xml:base="/blog/rest-api-best-practices">&lt;p&gt;The concept of REST is to separate the API structure into logical resources. HTTP methods GET, DELETE, POST and PUT are used to operate with the resources.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1&gt;Best practices:&lt;/h1&gt;
+
+&lt;ol&gt;
+
+  &lt;li&gt;
+    &lt;strong&gt;Use nouns but no verbs&lt;/strong&gt;
+
+    &lt;table&gt;
+    &lt;tbody&gt;
+    &lt;tr&gt;
+    &lt;th&gt;Resource&lt;/th&gt;
+    &lt;th&gt;GET&lt;/th&gt;
+    &lt;th&gt;POST&lt;/th&gt;
+    &lt;th&gt;PUT&lt;/th&gt;
+    &lt;th&gt;PATCH&lt;/th&gt;
+    &lt;th&gt;DELETE&lt;/th&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;
+    &lt;th&gt;/profiles&lt;/th&gt;
+    &lt;td&gt;Retrieve profiles list
+    &lt;td&gt;Add a profile&lt;/td&gt;
+    &lt;td&gt;Replace multiple profiles&lt;/td&gt;
+    &lt;td&gt;Modify multiple profile&lt;/td&gt;
+    &lt;td&gt;Delete multiple profiles&lt;/td&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;
+    &lt;th&gt;/profiles/1&lt;/th&gt;
+    &lt;td&gt;Retrieve this profile&lt;/td&gt;
+    &lt;td&gt;&lt;501&gt;&lt;/td&gt;
+    &lt;td&gt;Replace this profile (assign a totally different object - if value is not specified for certain attributes, default value is taken)&lt;/td&gt;
+    &lt;td&gt;Modify this profile ( if value is not specified for certain attributes, previous value is not altered)     &lt;/td&gt;
+    &lt;td&gt;Deletes this profile&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+    &lt;/table&gt;
+
+    &lt;p&gt;Do not use verbs:&lt;br/&gt;
+    /getAllProfiles or /createNewProfile or /deleteAllRedCars
+    &lt;/p&gt;
+
+  &lt;/li&gt;
+
+  &lt;li&gt;
+    &lt;strong&gt;GET method and query parameters should not be used to perform actions on the resources&lt;/strong&gt;
+    &lt;p&gt;Use PUT, POST and DELETE methods instead of the GET method to perform actions on the resources. Do not use GET for state changes:&lt;/p&gt;
+    &lt;pre&gt;
+      
+          GET /profiles/1?install //Not recommended
+          GET /getAllProfiles //Not recommended
+          GET /createNewProfile //Not recommended
+          GET /deleteAllRedCars //Not recommended
+          DELETE /profiles/1 //Good
+       
+     &lt;/pre&gt;
+  &lt;/li&gt;
+
+
+  &lt;li&gt;
+  &lt;strong&gt;Use plural nouns&lt;/strong&gt;
+  &lt;p&gt;Do not mix up singular and plural nouns. Keep it simple and use only plural nouns for all resources.&lt;/p&gt;
+  &lt;pre&gt;
+     
+        GET /profile //Not recommended
+        GET /profiles  //Good
+     
+  &lt;/pre&gt;
+  &lt;/li&gt;
+
+
+  &lt;li&gt;
+  &lt;strong&gt;Use sub-resources for relations&lt;/strong&gt;
+  &lt;p&gt;If a resource is related to another resource use subresources.
+    &lt;pre&gt;
+       
+         GET /profiles/1/devices Returns distribution status of profile with id 1 for all devices
+         GET /profiles/1/devices/4 Returns distribution status of profile with id 1 for device wth id 4
+       
+    &lt;/pre&gt;
+  &lt;/li&gt;
+
+  &lt;li&gt;
+  &lt;strong&gt;Use HTTP headers for serialization formats&lt;/strong&gt;
+  &lt;p&gt;Both, client and server, need to know which format is used for the communication. The format has to be specified in the HTTP-Header.&lt;br/&gt;
+  Content-Type defines the request format.&lt;br/&gt;
+  Accept defines a list of acceptable response formats.
+  &lt;/p&gt;
+  &lt;/li&gt;
+
+  &lt;li&gt;
+  &lt;strong&gt;Use Content-Disposition headers for sharing file name&lt;/strong&gt;
+  &lt;/li&gt;
+
+  &lt;li&gt;
+  &lt;strong&gt;Use Accept-Language header for sharing client language.&lt;/strong&gt;
+  &lt;p&gt;If it is not an Acceptable language, HTTP Error 406 Not Acceptable must be returned. If a matching language is present, response must contain Content-Language header with language as value&lt;/p&gt;
+  &lt;p&gt;Ex: &lt;/p&gt;
+  &lt;pre&gt;
+    
+      Accept-Language: en,en-US,fr;q=0.6 Content-Language: en-US
+    
+  &lt;/pre&gt;
+  &lt;/li&gt;
+
+
+  &lt;li&gt;
+  &lt;strong&gt;Version your API&lt;/strong&gt;
+  &lt;p&gt;APIs should use Semantic Versioning. Given a version number MAJOR.MINOR.PATCH, increment the: &lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;MAJOR version when you make incompatible API changes,&lt;/li&gt;
+    &lt;li&gt;MINOR version when you add functionality in a backwards-compatible manner,&lt;/li&gt;
+    &lt;li&gt;PATCH version when you make backwards-compatible bug fixes.&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;p&gt;Backwards-compatible (non-breaking) changes include : &lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;Adding an API interface to an API service&lt;/li&gt;
+    &lt;li&gt;Adding a method to an API interface&lt;/li&gt;
+    &lt;li&gt;Adding an HTTP binding to a method&lt;/li&gt;
+    &lt;li&gt;Adding a field to a request message&lt;/li&gt;
+    &lt;li&gt;Adding a field to a response message&lt;/li&gt;
+    &lt;li&gt;Adding a value to an enum&lt;/li&gt;
+    &lt;li&gt;Adding an output-only resource field&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;p&gt;Backwards-incompatible (breaking) changes include : &lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;Removing or renaming a service, interface, field, method or enum value&lt;/li&gt;
+    &lt;li&gt;Changing an HTTP binding&lt;/li&gt;
+    &lt;li&gt;Changing the type of a field&lt;/li&gt;
+    &lt;li&gt;Changing a resource name format&lt;/li&gt;
+    &lt;li&gt;Changing visible behavior of existing requests&lt;/li&gt;
+    &lt;li&gt;Changing the URL format in the HTTP definition&lt;/li&gt;
+    &lt;li&gt;Adding a read/write field to a resource message&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Handle Errors with HTTP status codes&lt;/strong&gt;
+  &lt;p&gt;It is hard to work with an API that ignores error handling. Pure returning of a HTTP 500 with a stacktrace is not very helpful.
+  &lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Use HTTP status codes&lt;/strong&gt;
+  &lt;p&gt;The HTTP standard provides over 70 status codes to describe the return values. We don’t need them all, but some can be used.&lt;br/&gt;
+  200 OK&lt;br/&gt;
+  201 Created&lt;br/&gt;
+  202 Accepted&lt;br/&gt;
+  204 No Content&lt;br/&gt;
+  400 Bad Request&lt;br/&gt;
+  401 Unauthorized&lt;br/&gt;
+  403 Forbidden&lt;br/&gt;
+  404 Not Found&lt;br/&gt;
+  405 Method Not Allowed 406 Not Acceptable&lt;br/&gt;
+  409 Conflict&lt;br/&gt;
+  412 Precondition Failed 500 Internal Server Error 501 Not Implemented&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Use error payloads&lt;/strong&gt;
+&lt;p&gt;All exceptions should be mapped in an error payload. Here is an example how a JSON payload should look like.&lt;/p&gt;
+&lt;pre&gt;
+  
+  {
+  &quot;errors&quot;: {
+  &quot;error_message&quot;: &quot;No car found in the database&quot;,
+  &quot;error_code&quot;: 34,
+  &quot;error_kb&quot;: &quot;http://dev.mwaysolutions.com/blog/api/v1/errors/12345&quot; }
+  }
+  
+&lt;/pre&gt;
+
+&lt;li&gt;&lt;strong&gt;Allow overriding HTTP method&lt;/strong&gt;
+  &lt;p&gt;Some proxies support only POST and GET methods. To support a RESTful API with these limitations, the API needs a way to override the HTTP method.
+  Use the custom HTTP Header X-HTTP-Method-Override to overrider the POST Method.
+  &lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Filtering&lt;/strong&gt;
+  &lt;p&gt;Use a unique query parameter for each field that implements filtering. For example, when requesting a list of profiles from the /profiles endpoint, you may want to limit these to only those created by admin. This could be accomplished with a request like GET /tickets?created_by=1. Here, created_by is a query parameter that implements a filter.&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+  &lt;strong&gt;Sorting&lt;/strong&gt;
+  &lt;p&gt;
+    Similar to filtering, a generic parameter sort can be used to describe sorting rules. Accommodate complex sorting requirements by letting the sort parameter take in list of comma separated fields, each with a possible unary negative to imply descending sort order. Let's look at some examples:
+  &lt;/p&gt;
+  &lt;pre&gt;
+    
+    GET /profiles?sort=name //Retrieves a list of profiles in ascending order of name (alphabetical order)
+    GET /profiles?sort=-name,created_time //Retrieves a list of profiles in descending order of name.
+                                          //Within a specific name, older profiles are ordered first
+    
+  &lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Column Choosing - Limiting which fields are returned by the API&lt;/strong&gt;
+  &lt;p&gt;
+    The API consumer doesn't always need the full representation of a resource. The ability select and choose returned fields goes a long way in letting the API consumer minimize network traffic and speed up their own usage of the API.
+    Use a fields query parameter that takes a comma separated list of fields to include. For example, the following request would retrieve just enough information to display a sorted listing of recent published profiles:
+  &lt;/p&gt;
+  &lt;pre&gt;
+    
+    GET /profiles?includes=id,name,platform_type,created_by&amp;status=published&amp;sort=-created_time
+    
+  &lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Updates &amp; creation should return a resource representation&lt;/strong&gt;
+  &lt;p&gt;A PUT, POST or PATCH call may make modifications to fields of the underlying resource that weren't part of the provided parameters (for example: created_at or updated_at timestamps). To prevent an API consumer from having to hit the API again for an updated representation, have the API return the updated (or created) representation as part of the response.
+  In case of a POST that resulted in a creation, you can return the GET response (or) use a HTTP 201 status code and include a Location header that points to the URL of the new resource.
+&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Webhooks&lt;/strong&gt;
+  &lt;p&gt;For command execution, to know the status of a particular command, the service using our REST API, can do one of the below:&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Poll for the corresponding command status&lt;/li&gt;
+    &lt;li&gt;Use webhooks for asynchronous callbacks&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;p&gt;Using polling will increase load on our API server, as for each command status will be polled several times before a completion response (success/ failure) is sent. Therefore, callback approach is generally preferred. Can read &lt;a href =&quot;https://www.linkedin.com/pulse/asynchronus-rest-api-case-study-amandeep-batra&quot;&gt;this&lt;/a&gt; for more details:
+  &lt;p&gt;Sample webhook response format is &lt;/p&gt;&lt;/p&gt;
+  &lt;pre&gt;
+    
+  {
+    &quot;event&quot;:&quot;device&quot;,
+    &quot;action&quot;:&quot;added&quot;,
+    &quot;status&quot;:&lt;http-code&gt;,
+      &quot;device&quot;:{
+        ... device data...
+               }
+  }
+  
+  &lt;/pre&gt;
+&lt;p&gt;As event is triggered, callback is called for a single device. Therefore, we use singular forms for resources.
+  Actions must always be in past tense.&lt;br/&gt;
+  Ex: added, deleted, assigned, scanned, erased etc.&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Files&lt;/strong&gt;
+  &lt;p&gt;For files, it is preferred to write file content as a stream, instead of posting file contents as muti-part forms. (They are not proper REST). All error handling (file size, type can be handled in security xml) File will be uploaded and a file_id will be returned. the same can be sent to other REST APIs for file URL
+  Ex. for adding app store app, id of file will be mentioned as file_id obtained in response, while uploading the file at /files endpoint&lt;/p&gt;
+  &lt;pre&gt;
+  
+  {
+    &quot;app_name&quot;: &quot;Foldr&quot;,
+    &quot;country_code&quot;: &quot;US
+    &quot;configfile&quot;: 1
+  }
+  
+  &lt;/pre&gt;
+  &lt;p&gt;Details for this is available in &lt;a href=&quot;https://philsturgeon.uk/api/2016/01/04/http-rest-api-file-uploads/&quot;&gt;here&lt;/a&gt; &lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Pagination&lt;/strong&gt;
+  &lt;p&gt;For pagination, response JSON will contain the following key,&lt;/p&gt;
+  &lt;pre&gt;
+  
+  &quot;page_details&quot;:{
+    &quot;skip_token_first&quot;: dsfs5fsdf5s5f8sd5fds8&quot;,
+    &quot;skip_token_prev&quot;: dsfs5fsdf5s5f8sd5fds8&quot;,
+    &quot;skip_token_next&quot;: dsfs5fsdf5s5f8sd5fds8&quot;,
+    &quot;skip_token_last&quot;: dsfs5fsdf5s5f8sd5fds8&quot;,
+    &quot;page_number&quot;:1,
+    &quot;page_length&quot;:10,
+    &quot;total_records&quot;:100
+  }
+  
+  &lt;/pre&gt;
+  &lt;p&gt;
+    Skip token can be expandable to the form : page_number=1&amp;page_length=10 It can be encoded to form a token, which can be used.
+  For further details, refer &lt;a href = &quot;https://msdn.microsoft.com/en-us/library/azure/ad/graph/howto/azure-ad-graph-api-supported-queries-filters-and-paging-options&quot;&gt;here&lt;/a&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Differential Token&lt;/strong&gt;
+  &lt;p&gt;For diff data, every request for list can contain a delta_token, similar to skip_token. The delta_token can be expanded to last_modified_time=timestamp
+  For further details, refer &lt;a href = &quot;https://msdn.microsoft.com/en-us/library/azure/ad/graph/howto/azure-ad-graph-api-differential-query&quot;&gt;here&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;li&gt;&lt;strong&gt;Customer Segmentation&lt;/strong&gt;
+  &lt;p&gt;For customer segmentation of data in a product (where same product is shared by multiple customers ex, Azure AD), customer name must be mentioned in URL path after /api/version/ and before the beginning of an endpoint /devices &lt;/p&gt;
+&lt;/li&gt;
+
+&lt;/ol&gt;</content><author><name>Anjana Sudhir</name></author><category term="rest" /><summary type="html">The concept of REST is to separate the API structure into logical resources. HTTP methods GET, DELETE, POST and PUT are used to operate with the resources.</summary></entry></feed>

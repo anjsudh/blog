@@ -1,18 +1,44 @@
----
-layout: post
-current: post
-cover: assets/images/rest.png
-navigation: True
-title: Best practices towards writing a REST API
-date: 2017-12-03 10:00:00
-tags: rest
-class: post-template
-subclass: 'post'
-author: anjana
-categories: anjana
----
+<?xml version="1.0" encoding="UTF-8" ?>
 
-<p>The concept of REST is to separate the API structure into logical resources. HTTP methods GET, DELETE, POST and PUT are used to operate with the resources.</p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>/blog/</title>
+   
+   <link>/blog/</link>
+   <description>A blog to keep track and share my learnings as a dev.</description>
+   <language>en-uk</language>
+   
+   <title>
+   <![CDATA[ Just Random Things ]]>
+   </title>
+   <description>
+   <![CDATA[ A blog to keep track and share my learnings as a dev. ]]>
+   </description>
+   <link>/blog/</link>
+   <image>
+   <url>/blog/assets/images/favicon.png</url>
+   <title>Just Random Things</title>
+   <link>/blog/</link>
+   </image>
+   <generator>Jekyll 3.6.2</generator>
+   <lastBuildDate></lastBuildDate>
+   <atom:link href="/blog/rss.xml" rel="self" type="application/rss+xml"/>
+   <ttl>60</ttl>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>Best practices towards writing a REST API</title>
+	  <link>/blog/rest-api-best-practices</link>
+		
+				
+						<author>Anjana Sudhir</author>
+				
+		
+	  <pubDate>2017-12-03T10:00:00+00:00</pubDate>
+	  <guid>/blog/rest-api-best-practices</guid>
+	  <description><![CDATA[
+	     <p>The concept of REST is to separate the API structure into logical resources. HTTP methods GET, DELETE, POST and PUT are used to operate with the resources.</p>
 
 <hr />
 
@@ -64,13 +90,13 @@ categories: anjana
     <strong>GET method and query parameters should not be used to perform actions on the resources</strong>
     <p>Use PUT, POST and DELETE methods instead of the GET method to perform actions on the resources. Do not use GET for state changes:</p>
     <pre>
-      {% raw %}
+      
           GET /profiles/1?install //Not recommended
           GET /getAllProfiles //Not recommended
           GET /createNewProfile //Not recommended
           GET /deleteAllRedCars //Not recommended
           DELETE /profiles/1 //Good
-       {% endraw %}
+       
      </pre>
   </li>
 
@@ -79,10 +105,10 @@ categories: anjana
   <strong>Use plural nouns</strong>
   <p>Do not mix up singular and plural nouns. Keep it simple and use only plural nouns for all resources.</p>
   <pre>
-     {% raw %}
+     
         GET /profile //Not recommended
         GET /profiles  //Good
-     {% endraw %}
+     
   </pre>
   </li>
 
@@ -91,10 +117,10 @@ categories: anjana
   <strong>Use sub-resources for relations</strong>
   <p>If a resource is related to another resource use subresources.
     <pre>
-       {% raw %}
+       
          GET /profiles/1/devices Returns distribution status of profile with id 1 for all devices
          GET /profiles/1/devices/4 Returns distribution status of profile with id 1 for device wth id 4
-       {% endraw %}
+       
     </pre>
   </li>
 
@@ -115,9 +141,9 @@ categories: anjana
   <p>If it is not an Acceptable language, HTTP Error 406 Not Acceptable must be returned. If a matching language is present, response must contain Content-Language header with language as value</p>
   <p>Ex: </p>
   <pre>
-    {% raw %}
+    
       Accept-Language: en,en-US,fr;q=0.6 Content-Language: en-US
-    {% endraw %}
+    
   </pre>
   </li>
 
@@ -176,14 +202,14 @@ categories: anjana
 <li><strong>Use error payloads</strong>
 <p>All exceptions should be mapped in an error payload. Here is an example how a JSON payload should look like.</p>
 <pre>
-  {% raw %}
+  
   {
   "errors": {
   "error_message": "No car found in the database",
   "error_code": 34,
   "error_kb": "http://dev.mwaysolutions.com/blog/api/v1/errors/12345" }
   }
-  {% endraw %}
+  
 </pre>
 
 <li><strong>Allow overriding HTTP method</strong>
@@ -202,11 +228,11 @@ categories: anjana
     Similar to filtering, a generic parameter sort can be used to describe sorting rules. Accommodate complex sorting requirements by letting the sort parameter take in list of comma separated fields, each with a possible unary negative to imply descending sort order. Let's look at some examples:
   </p>
   <pre>
-    {% raw %}
+    
     GET /profiles?sort=name //Retrieves a list of profiles in ascending order of name (alphabetical order)
     GET /profiles?sort=-name,created_time //Retrieves a list of profiles in descending order of name.
                                           //Within a specific name, older profiles are ordered first
-    {% endraw %}
+    
   </pre>
 </li>
 
@@ -216,9 +242,9 @@ categories: anjana
     Use a fields query parameter that takes a comma separated list of fields to include. For example, the following request would retrieve just enough information to display a sorted listing of recent published profiles:
   </p>
   <pre>
-    {% raw %}
+    
     GET /profiles?includes=id,name,platform_type,created_by&status=published&sort=-created_time
-    {% endraw %}
+    
   </pre>
 </li>
 
@@ -237,7 +263,7 @@ categories: anjana
   <p>Using polling will increase load on our API server, as for each command status will be polled several times before a completion response (success/ failure) is sent. Therefore, callback approach is generally preferred. Can read <a href ="https://www.linkedin.com/pulse/asynchronus-rest-api-case-study-amandeep-batra">this</a> for more details:
   <p>Sample webhook response format is </p></p>
   <pre>
-    {% raw %}
+    
   {
     "event":"device",
     "action":"added",
@@ -246,7 +272,7 @@ categories: anjana
         ... device data...
                }
   }
-  {% endraw %}
+  
   </pre>
 <p>As event is triggered, callback is called for a single device. Therefore, we use singular forms for resources.
   Actions must always be in past tense.<br/>
@@ -257,13 +283,13 @@ categories: anjana
   <p>For files, it is preferred to write file content as a stream, instead of posting file contents as muti-part forms. (They are not proper REST). All error handling (file size, type can be handled in security xml) File will be uploaded and a file_id will be returned. the same can be sent to other REST APIs for file URL
   Ex. for adding app store app, id of file will be mentioned as file_id obtained in response, while uploading the file at /files endpoint</p>
   <pre>
-  {% raw %}
+  
   {
     "app_name": "Foldr",
     "country_code": "US
     "configfile": 1
   }
-  {% endraw %}
+  
   </pre>
   <p>Details for this is available in <a href="https://philsturgeon.uk/api/2016/01/04/http-rest-api-file-uploads/">here</a> </p>
 </li>
@@ -271,7 +297,7 @@ categories: anjana
 <li><strong>Pagination</strong>
   <p>For pagination, response JSON will contain the following key,</p>
   <pre>
-  {% raw %}
+  
   "page_details":{
     "skip_token_first": dsfs5fsdf5s5f8sd5fds8",
     "skip_token_prev": dsfs5fsdf5s5f8sd5fds8",
@@ -281,7 +307,7 @@ categories: anjana
     "page_length":10,
     "total_records":100
   }
-  {% endraw %}
+  
   </pre>
   <p>
     Skip token can be expandable to the form : page_number=1&page_length=10 It can be encoded to form a token, which can be used.
@@ -298,3 +324,10 @@ categories: anjana
 </li>
 
 </ol>
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>
